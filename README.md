@@ -42,6 +42,12 @@ useA11y({
 </template>
 ```
 
+Once implemented, you will be able to see the all findings for accessbiliy violations on the currenlty rendered page in your browser's JavaScript console:
+
+![Console output showing accessibility violations](./console_example.png)
+
+The scan will re-run on every update in the view. 
+
 ### Advanced Options
 
 ```ts
