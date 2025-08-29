@@ -99,6 +99,10 @@ The composable returns:
 
 Contributions, issues, and feature requests are welcome! Feel free to open an issue or submit a pull request.
 
+## Notes
+
+This plugin is inspired by the [`@axe-core/react`](https://github.com/dequelabs/axe-core-npm) plugin for React applications.
+
 ## License
 
 MIT
