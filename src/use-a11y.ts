@@ -1,11 +1,11 @@
-import { onMounted, onUnmounted, ref, watch, nextTick, type Ref } from "vue";
+import { onMounted, onUnmounted, ref, watch, nextTick, type Ref, type TemplateRef } from "vue";
 import type { AxeResults, ElementContext, Result } from "axe-core";
 
 interface AccessibilityHookOptions {
   /**
    * The element to test. Defaults to document.body
    */
-  element?: Ref<HTMLElement | undefined> | HTMLElement;
+  element?: TemplateRef<HTMLElement | undefined> | Ref<HTMLElement | undefined>;
   /**
    * Whether to enable the accessibility checking. Defaults to true in development
    */
@@ -31,7 +31,7 @@ interface AccessibilityHookOptions {
    */
   watchInteractions?: boolean;
   /**
-   * Logger prefix to include in accessibility messages (e.g., "[MyApp] (0e2d)")
+   * Logger prefix to include in accessibility messages (e.g., "[MyApp]")
    */
   loggerPrefix?: string;
   /**
@@ -187,7 +187,8 @@ const findByHtmlContent = (
 
   // Try to find by class combination
   if (classMatch) {
-    const classes = classMatch[1].split(" ").filter((c) => c.length > 0);
+    // Only use classes that do not contain a colon (pseudo-classes)
+    const classes = classMatch[1].split(" ").filter((c) => c.length > 0 && !c.includes(":"));
     if (classes.length > 0) {
       const element = root.querySelector(`.${classes.join(".")}`);
       if (element) return element;
@@ -240,10 +241,10 @@ const processAxeQueue = async () => {
  * Vue composable for accessibility testing using axe-core
  * Provides similar functionality to @axe-core/react but for Vue applications
  */
-export function useAccessibility(options: AccessibilityHookOptions = {}) {
+export function useA11y(options: AccessibilityHookOptions = {}) {
   const {
     element,
-    enabled = process.env.NODE_ENV === "development",
+    enabled = true,
     axeOptions = {},
     enableHighlighting = true,
     watchForChanges = true,
@@ -548,11 +549,7 @@ export function useAccessibility(options: AccessibilityHookOptions = {}) {
         isRunning.value = true;
         axeInstances.add(instanceId);
 
-        const targetElement = element
-          ? "value" in element
-            ? element.value
-            : element
-          : document.body;
+        const targetElement = element?.value ?? document.body;
 
         if (!targetElement) {
           // eslint-disable-next-line no-console
@@ -635,7 +632,7 @@ export function useAccessibility(options: AccessibilityHookOptions = {}) {
   const setupMutationObserver = () => {
     if (!watchForChanges || mutationObserver) return;
 
-    const targetElement = element ? ("value" in element ? element.value : element) : document.body;
+  const targetElement = element?.value ?? document.body;
 
     if (!targetElement) return;
 
@@ -707,7 +704,7 @@ export function useAccessibility(options: AccessibilityHookOptions = {}) {
   const setupInteractionListeners = () => {
     if (!watchInteractions) return;
 
-    const targetElement = element ? ("value" in element ? element.value : element) : document.body;
+  const targetElement = element?.value ?? document.body;
 
     if (!targetElement) return;
 
@@ -724,7 +721,7 @@ export function useAccessibility(options: AccessibilityHookOptions = {}) {
 
   // Watch for element changes
   watch(
-    () => (element && "value" in element ? element.value : element),
+  () => element?.value,
     (newElement, oldElement) => {
       if (newElement !== oldElement) {
         // Cleanup old observers
@@ -780,17 +777,5 @@ export function useAccessibility(options: AccessibilityHookOptions = {}) {
     removeHighlight
   };
 }
-
-// USAGE EXAMPLE
-
-// Initialize accessibility checking
-useAccessibility({
-  element: appRef,
-  enabled: props.dev || process.env.NODE_ENV === "development",
-  enableHighlighting: true,
-  loggerPrefix: `[MyApp] (${appStore.appId})`,
-  initialScanDelay: 3000, // Wait 3 seconds before initial scan
-  waitForContent: true // Wait for meaningful content before scanning
-});
 
 export type { AccessibilityHookOptions, ViolationLogEntry };

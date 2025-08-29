@@ -1,0 +1,54 @@
+{
+  "name": "vue-use-a11y",
+  "version": "0.1.0",
+  "description": "A Vue 3 composable for accessibility (a11y) features.",
+  "main": "dist/use-a11y.cjs.js",
+  "module": "dist/use-a11y.esm.js",
+  "types": "dist/use-a11y.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/use-a11y.esm.js",
+      "require": "./dist/use-a11y.cjs.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voodoods/vue-use-a11y.git"
+  },
+  "keywords": [
+    "vue",
+    "a11y",
+    "composable",
+    "hook",
+    "accessibility"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": ">=3.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.12",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.12",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3",
+    "vite-plugin-dts": "^4.5.4",
+    "vue": "^3.5.20"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "serve": "vite",
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "axe-core": "^4.10.3"
+  }
+}
