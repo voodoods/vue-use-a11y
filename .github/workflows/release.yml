@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine next version
+        id: version
+        uses: paulhatch/semantic-version@v5
+        with:
+          tag_prefix: "v"
+          bump_each_commit: false
+          version_format: "${major}.${minor}.${patch}"
+      - name: Set version in package.json
+        run: |
+          npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
